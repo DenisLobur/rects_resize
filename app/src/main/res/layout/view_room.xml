@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="100dp"
     android:layout_height="100dp"
-    android:background="@android:color/transparent">
+    android:id="@+id/holder"
+    android:background="@android:color/holo_orange_dark">
 
     <TextView
         android:id="@+id/mainView"
@@ -14,7 +15,7 @@
         android:text="Room"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:background="#66008577"/>
+        android:background="#44008577"/>
 
     <ImageView
         android:id="@+id/topLeftPin"

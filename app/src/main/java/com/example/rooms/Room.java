@@ -2,19 +2,20 @@ package com.example.rooms;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class Room extends ConstraintLayout {
+public class Room extends RelativeLayout {
 
+    private RelativeLayout rl;
     private ImageView topLeftPin;
     private ImageView topRightPin;
     private ImageView bottomLeftPin;
@@ -22,7 +23,7 @@ public class Room extends ConstraintLayout {
     private TextView mainView;
     private float dX, dY;
     private Context context;
-
+    private int currentWidth, currentHeight;
 
     public Room(Context context) {
         super(context);
@@ -39,11 +40,21 @@ public class Room extends ConstraintLayout {
         init(context);
     }
 
+    public Room(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context);
+    }
+
+
     private void init(Context context) {
         this.context = context;
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rootView = inflater.inflate(R.layout.view_room, this, false);
-
+        View rootView = inflater.inflate(R.layout.view_room_rel, this, false);
+        rl = rootView.findViewById(R.id.holder);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(300, 200);
+        currentWidth = 300;
+        currentHeight = 200;
+        rl.setLayoutParams(lp);
         addView(rootView);
 
         topLeftPin = rootView.findViewById(R.id.topLeftPin);
@@ -71,6 +82,14 @@ public class Room extends ConstraintLayout {
     boolean bottomLeftPinTouched;
     boolean bottomRightPinTouched;
     private final int PIN_SIZE_DP = 16;
+    private float startMoveX, startMoveY, endMoveX, endMoveY, deltaMoveX, deltaMoveY;
+    private int dragX, dragY;
+    RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(currentHeight, currentHeight);
+    private enum Direction{
+        LEFT, UP, RIGHT, DOWN
+    }
+
+    private Direction currentDirection;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -121,6 +140,8 @@ public class Room extends ConstraintLayout {
                     print("topRight: " + topRightPinTouched);
                     print("bottomLeft: " + bottomLeftPinTouched);
                     print("bottomRight:" + bottomRightPinTouched);
+                    startMoveX = event.getX();
+                    startMoveY = event.getY();
                 }
 
                 dX = this.getX() - event.getRawX();
@@ -135,13 +156,117 @@ public class Room extends ConstraintLayout {
                             .setDuration(0)
                             .start();
                 } else {
-//                        view.set
+                    endMoveX = event.getX();
+                    endMoveY = event.getY();
+                    deltaMoveX = endMoveX - startMoveX;
+                    deltaMoveY = endMoveY - startMoveY;
+
+                    if(Math.abs(deltaMoveX) > Math.abs(deltaMoveY)) {
+                        if (deltaMoveX > 0) {
+                            currentDirection = Direction.RIGHT;
+                        } else {
+                            currentDirection = Direction.LEFT;
+                        }
+                    } else {
+                        if(deltaMoveY > 0){
+                            currentDirection = Direction.DOWN;
+                        } else {
+                            currentDirection = Direction.UP;
+                        }
+                    }
+
+                    if(topLeftPinTouched){
+                        switch (currentDirection){
+                            case LEFT:
+                                dragX = -1;
+                                break;
+                            case UP:
+                                dragY = -1;
+                                break;
+                            case RIGHT:
+                                dragX = 1;
+                                break;
+                            case DOWN:
+                                dragY = 1;
+                                break;
+                        }
+
+                        lp.width = currentWidth + dragX;
+                        lp.height = currentHeight + dragY;
+                        rl.setLayoutParams(lp);
+                        currentWidth = lp.width;
+                        currentHeight = lp.height;
+                    } else if(topRightPinTouched){
+                        switch (currentDirection){
+                            case LEFT:
+                                dragX = -1;
+                                break;
+                            case UP:
+                                dragY = -1;
+                                break;
+                            case RIGHT:
+                                dragX = 1;
+                                break;
+                            case DOWN:
+                                dragY = 1;
+                                break;
+                        }
+
+                        lp.width = currentWidth + dragX;
+                        lp.height = currentHeight + dragY;
+                        rl.setLayoutParams(lp);
+                        currentWidth = lp.width;
+                        currentHeight = lp.height;
+                    } else if(bottomLeftPinTouched) {
+                        switch (currentDirection){
+                            case LEFT:
+                                dragX = -1;
+                                break;
+                            case UP:
+                                dragY = -1;
+                                break;
+                            case RIGHT:
+                                dragX = 1;
+                                break;
+                            case DOWN:
+                                dragY = 1;
+                                break;
+                        }
+
+                        lp.width = currentWidth + dragX;
+                        lp.height = currentHeight + dragY;
+                        rl.setLayoutParams(lp);
+                        currentWidth = lp.width;
+                        currentHeight = lp.height;
+                    } else {
+                        switch (currentDirection){
+                            case LEFT:
+                                dragX = -1;
+                                break;
+                            case UP:
+                                dragY = -1;
+                                break;
+                            case RIGHT:
+                                dragX = 1;
+                                break;
+                            case DOWN:
+                                dragY = 1;
+                                break;
+                        }
+
+                        lp.width = currentWidth + dragX;
+                        lp.height = currentHeight + dragY;
+                        rl.setLayoutParams(lp);
+                        currentWidth = lp.width;
+                        currentHeight = lp.height;
+                    }
                 }
                 break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 isCenter = false;
+//                this.requestLayout();
 //                    view.animate().cancel();
 //                    view.animate().scaleX(1f).setDuration(1000).start();
 //                    view.animate().scaleY(1f).setDuration(1000).start();
