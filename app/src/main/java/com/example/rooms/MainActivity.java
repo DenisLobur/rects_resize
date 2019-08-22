@@ -23,8 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout parent;
     private TextView button;
     private float dX, dY;
-    private ArrayList<TextView> tvs = new ArrayList<>();
+    private ArrayList<Room> rooms = new ArrayList<>();
     private Room room;
+    private Room activeRoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton delete = findViewById(R.id.delete);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,8 +52,29 @@ public class MainActivity extends AppCompatActivity {
                 room.setName("Jiga");
                 //room.setOnTouchListener(buttonListener);
                 parent.addView(room);
+                rooms.add(room);
+                activeRoom = room;
             }
         });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (Room room : rooms) {
+                    if (room.getCurrent()) {
+                        activeRoom = room;
+                    }
+                }
+
+                rooms.remove(activeRoom);
+                parent.removeView(activeRoom);
+            }
+
+        });
+    }
+
+    public ArrayList getAllRooms(){
+        return rooms;
     }
 
     boolean isCenter = false;

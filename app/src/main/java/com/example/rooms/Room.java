@@ -1,6 +1,7 @@
 package com.example.rooms;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -13,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Room extends RelativeLayout {
 
     private RelativeLayout rl;
@@ -24,6 +29,7 @@ public class Room extends RelativeLayout {
     private float dX, dY;
     private Context context;
     private int currentWidth, currentHeight;
+    private boolean isCurrent = false;
 
     public Room(Context context) {
         super(context);
@@ -76,6 +82,14 @@ public class Room extends RelativeLayout {
         mainView.setText(name);
     }
 
+    public synchronized void setCurrent(boolean isCurrent){
+        this.isCurrent = isCurrent;
+    }
+
+    public synchronized boolean getCurrent(){
+        return isCurrent;
+    }
+
     boolean isCenter = false;
     boolean topLeftPinTouched;
     boolean topRightPinTouched;
@@ -93,6 +107,16 @@ public class Room extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        ArrayList<Room> list = ((MainActivity) context).getAllRooms();
+        for(Room room: list){
+            if(room.equals(this)){
+                room.setCurrent(true);
+                room.mainView.setBackgroundColor(Color.MAGENTA);
+            } else {
+                room.setCurrent(false);
+                room.mainView.setBackgroundColor(Color.GREEN);
+            }
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if(isPointInsideView(event.getRawX(), event.getRawY(), this)){
